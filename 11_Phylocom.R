@@ -245,7 +245,7 @@ tiplabels(tip = which(phy$tip.label %in% colnames(comm)[comm["A01", ] > 0.01]), 
 ## prepare MOB data
 ##---------------------------------------------------------------------------------------------
 #################################################################################################
-otufile     <- "data/P349_ZOTU_pmoA_sintax_clean.tab"  
+otufile     <- "data/P349_ZOTU_pmoA_sintax.tab"  
 mapfile     <- "data/Metafile_imputed.txt" 
 treefile    <- "data/P349_ZOTU.tre"
 refseqfile  <- "data/P349_ZOTU.fa"
