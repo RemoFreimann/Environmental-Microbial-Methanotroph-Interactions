@@ -20,6 +20,20 @@ names(rotsee.env.table)
 ## here we produce log transformed environment data within the table
 ## if needed.
 ###################################################################
+## shapiro wilk test to assess normality of data (p>0.05 is normaly distributed)
+names(rotsee.env.table)
+rotsee.shapiro.env= rotsee.env.table[,-c(1:13, 15:18, 48:67)]
+
+lengthvec=c()
+for (i in c(1:length(rotsee.shapiro.env))){
+   
+   testshapiro= shapiro.test(rotsee.shapiro.env[,i])
+   if (testshapiro$p.value <= 0.05){
+      lengthvec[i]=print(colnames(rotsee.shapiro.env[i]))
+   }
+}
+print(na.omit(lengthvec))
+
 names(rotsee.env.table)
 rotsee.env.table.log = cbind( rotsee.env.table[,c(1:13)],
                               log1p(rotsee.env.table[,c(14),drop=FALSE]),
