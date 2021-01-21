@@ -1,0 +1,65 @@
+
+## Workflow for picrust2 
+
+## Activate a picrust specific environment
+conda create -n picrust2 -c bioconda -c conda-forge picrust2=2.3.0_b
+conda activate picrust2
+
+
+## If no biom file is there make one from the otu table and the metadata
+biom convert -i table.txt -o table.biom --to-hdf5 --table-type="OTU table" 
+
+
+## Put your fasta, biom and metadata files in a folder and cd to it and make some new folder for the ouptu
+mkdir picrust2_out_pipeline
+cd picrust2_out_pipeline
+
+
+## Place reads into reference tree
+place_seqs.py -s ../seqs.fna -o out.tre -p 16 \ --intermediate intermediate/place_seqs
+
+##Hidden-state prediction of gene families (for marker 16s, EC and KO)
+hsp.py -i 16S -t out.tre -o marker_predicted_and_nsti.tsv.gz -p 16 -n
+hsp.py -i EC -t out.tre -o EC_predicted.tsv.gz -p 16 -n
+hsp.py -i KO -t out.tre -o KO_predicted.tsv.gz -p 16 -n
+
+
+
+## Generate metagenome predictions
+
+metagenome_pipeline.py -i ../table.biom -m marker_predicted_and_nsti.tsv.gz -f EC_predicted.tsv.gz -o EC_metagenome_out --strat_out
+metagenome_pipeline.py -i ../table.biom -m marker_predicted_and_nsti.tsv.gz -f KO_predicted.tsv.gz -o KO_metagenome_out --strat_out
+
+
+## convert to Picrust1 format for programs like Burrito and Mimosa
+convert_table.py EC_metagenome_out/pred_metagenome_contrib.tsv.gz -c contrib_to_legacy -o EC_metagenome_out/pred_metagenome_contrib.legacy.tsv.gz
+convert_table.py KO_metagenome_out/pred_metagenome_contrib.tsv.gz -c contrib_to_legacy -o KO_metagenome_out/pred_metagenome_contrib.legacy.tsv.gz
+
+
+## Pathway-level inference
+## not stratified (per sample)
+pathway_pipeline.py -i EC_metagenome_out/pred_metagenome_unstrat.tsv.gz  -o EC_pathways_out -p 16    
+pathway_pipeline.py -i KO_metagenome_out/pred_metagenome_unstrat.tsv.gz  -o KO_pathways_out -p 16 --no_regroup --map /home/pulvertoast/anaconda3/envs/picrust2/lib/python3.6/site-packages/picrust2/default_files/pathway_mapfiles/KEGG_pathways_to_KO.tsv
+pathway_pipeline.py -i EC_metagenome_out/pred_metagenome_contrib.tsv.gz  -o EC_pathways_out -p 16
+pathway_pipeline.py -i KO_metagenome_out/pred_metagenome_contrib.tsv.gz  -o KO_pathways_out -p 16 --no_regroup --map /home/pulvertoast/anaconda3/envs/picrust2/lib/python3.6/site-packages/picrust2/default_files/pathway_mapfiles/KEGG_pathways_to_KO.tsv
+
+##  --> you also can run per the --per_sequence_contrib  option to get the relative abundance within a specific otu
+
+
+
+## ad description to the EC and KO
+## metagenomes
+add_descriptions.py -i EC_metagenome_out/pred_metagenome_unstrat.tsv.gz -m EC  -o EC_metagenome_out/pred_metagenome_unstrat_descrip.tsv.gz
+		add_descriptions.py -i EC_metagenome_out/pred_metagenome_contrib.tsv.gz -m EC  -o EC_metagenome_out/pred_metagenome_contrib_descrip.tsv.gz
+add_descriptions.py -i KO_metagenome_out/pred_metagenome_unstrat.tsv.gz -m KO -o KO_metagenome_out/pred_metagenome_unstrat_descrip.tsv.gz
+		add_descriptions.py -i KO_metagenome_out/pred_metagenome_contrib.tsv.gz -m KO -o KO_metagenome_out/pred_metagenome_contrib_descrip.tsv.gz
+## pathways
+add_descriptions.py -i EC_pathways_out/path_abun_unstrat.tsv.gz -m METACYC  -o EC_pathways_out/path_abun_unstrat_metacyc_descrip.tsv.gz
+		add_descriptions.py -i EC_pathways_out/path_abun_contrib.tsv.gz -m METACYC  -o EC_pathways_out/path_abun_contrib_metacyc_descrip.tsv.gz
+add_descriptions.py -i KO_pathways_out/path_abun_unstrat.tsv.gz -o KO_pathways_out/path_abun_unstrat_KO_descrip.tsv.gz --custom_map_table /home/pulvertoast/anaconda3/envs/picrust2/lib/python3.6/site-packages/picrust2/default_files/description_mapfiles/KEGG_pathways_info.tsv.gz 					
+		add_descriptions.py -i KO_pathways_out/path_abun_contrib.tsv.gz -m KO  -o KO_pathways_out/path_abun_contrib_KO_descrip.tsv.gz
+
+
+
+
+
