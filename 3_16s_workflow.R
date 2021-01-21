@@ -1100,7 +1100,7 @@ points(rotsee.mds.allOTUs, display ="species", cex=0.8, pch=21, col="grey", bg=a
 #legend("topright", inset=c(-0.22,0),c(unique(rotsee.tax.table[,"Phylum"])),pch=c(19),col=alpha(unique(col.genus[genus.df$id]), 0.7), bty="n", cex=0.6)
 #points(rotsee.mds.allOTUs, display ="sites", cex=c(goodpoint)*400, alpha= 2, pch=as.numeric(rotsee.env.table$Campaign)+20, col=col.depth[as.numeric(rotsee.env.table$Depth_m)/max(rotsee.env.table$Depth_m)*1000],
 #       bg=alpha(col.depth[as.numeric(rotsee.env.table$Depth_m)/max(rotsee.env.table$Depth_m)*1000], 0.5))
-## make pch not round A viereggli, B sind diamonds, C sind drüüeggli, D sind inversed drüüeglli
+## make pch not round A viereggli, B sind diamonds, C sind drÃ¼Ã¼eggli, D sind inversed drÃ¼Ã¼eglli
 points(rotsee.mds.allOTUs, display ="sites", cex=3.5, alpha= 2, pch=as.numeric(as.factor(rotsee.env.table$Campaign))+21, col=col.depth[as.numeric(rotsee.env.table$Depth_m)/max(rotsee.env.table$Depth_m)*1000],
        bg=alpha(col.depth[as.numeric(rotsee.env.table$Depth_m)/max(rotsee.env.table$Depth_m)*1000], 0.8))
 text(rotsee.mds.allOTUs$points[, 1]+0.05, rotsee.mds.allOTUs$points[, 2]+0.05,
@@ -3606,7 +3606,7 @@ Graph_pcor <- qgraph(M,graph = "pcor", layout = "spring",layout = "spring",  min
 ## import the data and process as in the complete workflow for pmoA
 ###########################################################################################################################
 ###########################################################################################################################
-otufile     <- "data/P349_ZOTU_pmoA_sintax_clean.tab"  
+otufile     <- "data/P349_ZOTU_pmoA_sintax.tab"  
 mapfile     <- "data/Metafile_impuded.txt"  
 treefile    <- "data/P349_ZOTU.tre"
 refseqfile  <- "data/P349_ZOTU.fa"
